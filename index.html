@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>US Population from 2013 to 2021</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #000000;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>US Population from 2013 to 2021</h1>
+    <div id="population-container">
+        <!-- Population data will be displayed here -->
+    </div>
+
+    <script>
+        // Function to fetch US population data from the API
+        function fetchPopulationData() {
+            fetch('https://datausa.io/api/data?drilldowns=Nation&measures=Population')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Filter data for the years 2013 to 2021
+                    const populationData = data.data.filter(entry => {
+                        const year = parseInt(entry.Year);
+                        return year >= 2013 && year <= 2021;
+                    });
+
+                    // Display the population data
+                    displayPopulationData(populationData);
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        }
+
+        // Function to display the population data
+        function displayPopulationData(populationData) {
+            const populationContainer = document.getElementById('population-container');
+
+            // Create a table to display the population data
+            const table = document.createElement('table');
+            const headerRow = table.insertRow();
+            const headerYear = headerRow.insertCell();
+            const headerPopulation = headerRow.insertCell();
+            headerYear.textContent = 'Year';
+            headerPopulation.textContent = 'Population';
+
+            // Populate the table with data
+            populationData.forEach(entry => {
+                const row = table.insertRow();
+                const cellYear = row.insertCell();
+                const cellPopulation = row.insertCell();
+                cellYear.textContent = entry.Year;
+                cellPopulation.textContent = entry.Population;
+            });
+
+            // Append the table to the population container
+            populationContainer.appendChild(table);
+        }
+
+        // Call the fetchPopulationData function when the page loads
+        window.onload = fetchPopulationData;
+    </script>
+</body>
+</html>
